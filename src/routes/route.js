@@ -7,43 +7,9 @@ router.get('/students/:name', function(req, res) {
     res.send(studentName)
 })
 
-router.get("/random" , function(req, res) {
-    res.send("hi there")
-})
-
-
-router.get("/test-api" , function(req, res) {
-    res.send("hi FunctionUp")
-})
-
-
-router.get("/test-api-2" , function(req, res) {
-    res.send("hi FunctionUp. This is another cool API")
-})
-
-
-router.get("/test-api-3" , function(req, res) {
-    res.send("hi FunctionUp. This is another cool API. And NOw i am bored of creating API's ")
-})
-
-
-router.get("/test-api-4" , function(req, res) {
-    res.send("hi FunctionUp. This is another cool API. And NOw i am bored of creating API's. PLZ STOP CREATING MORE API;s ")
-})
 
 
 
-router.get("/test-api-5" , function(req, res) {
-    res.send("hi FunctionUp5. This is another cool API. And NOw i am bored of creating API's. PLZ STOP CREATING MORE API;s ")
-})
-
-router.get("/test-api-6" , function(req, res) {
-    res.send({a:56, b: 45})
-})
-
-router.post("/test-post", function(req, res) {
-    res.send([ 23, 45 , 6])
-})
 
 
 router.post("/test-post-2", function(req, res) {
@@ -60,6 +26,57 @@ router.post("/test-post-3", function(req, res) {
 
     res.send(  { msg: "hi" , status: true }  )
 })
+let players=[]
+router.post('/players', function(req, res){
+    
+    let player= req.body
+    let playerName = players.name
+    for(let i=0;i<players.length;i++)
+    {
+        if(players[i].name == playerName)
+        {
+           return  req.send('players not exits')
+        }
+    }
+    players.push(player)
+    console.log('here is the player from requst',players)
+    res.send(players)
+})
+router.post('players/:playerName/booking/:bookingId', function(req, res){
+    let name= req.params.playerName
+    
+    let isplayerPresent= false
+    for(let i=0;i<players.length;i++)
+    {
+          if(players[i].name== name)
+          {
+        isplayerPresent= true
+          }
+    }
+       if(!isplayerPersent)
+       {
+          return res.send('player not present')
+       }
+
+        let booking= req.body
+        let bookingId= req.params.bookingId
+          for(let i=0;i<players.length;i++)
+          {
+                 let isbbookingPresent= false
+                 for(let j=0;j<players[i].booking.length)
+                 {
+                     console.log(players[i])
+                     if(players[i].booking[j])
+                     {
+                         res.send('booking is already present')
+                     }
+                 }
+              players[i].bookings.push(booking)
+          }
+      res.send(players)
+})
+
+
 
 
 
