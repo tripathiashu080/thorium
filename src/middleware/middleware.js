@@ -1,22 +1,47 @@
-const jwt = require("jsonwebtoken");
-const userModel = require("../models/userModel");
+const jwt = require("jsonwebtoken")
 
-const authentication = async function(req,res,next){
-    let token = req.headers["x-Auth-token"];
-    if(!token)  token = req.headers["x-auth-token"];
-    if(!token) return res.send({status:false, Warning :"token must be present"})
+let authenticate = async function (req, res, next) {
+    try {
+        let token = req.headers['x-auth-token']
 
-    let decodedToken = jwt.verify(token, "SECRET MESSAGE")
-    if(!decodedToken) return res.send({status : false, warning : "Invalid Token"})
+        if (!token) return res.status(400).send({ status: false, msg: "token is not present in header" })
 
-    next()
+        // console.log(token)
+
+        let decodeToken = jwt.verify(token, "Ronaldo-007")
+        if (decodeToken) {
+            req.decodeToken = decodeToken
+            next()
+
+        } else {
+
+            return res.status(401).send({ status: false, msg: "Invalid token" }) // if 
+        }
+    }
+    catch (err) {
+        res.status(500).send({ status: false, msg: err.message })
+    }
+
+
+
 }
 
-const authorisation = async function(req,res,next){
-    let decodedToken = jwt.verify(req.headers["x-auth-token"],"SECRET MESSAGE");
-    if(decodedToken.userId != req.params.userId) return res.send({Warning: "You are not allowed to make changes in this data"})
-    next()
+const authorise = function (req, res, next) {
+    try {
+        let userId = req.params.userId
+
+
+        if (req.decodeToken.userId != userId) return res.status(403).send({ status: false, msg: "you are trying to change someone else profile" })
+        req.userId = userId
+        next()
+
+    }catch(err){
+        res.status(500).send({ status: false, msg: err.message })
+
+
+    }
+    
 }
 
-module.exports.authentication = authentication;
-module.exports.authorisation = authorisation;
+module.exports.authenticate = authenticate
+module.exports.authorise = authorise
