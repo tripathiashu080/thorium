@@ -1,23 +1,24 @@
-const authorModel = require('../models/authorModel.js');
+const authorModel = require("../model/authorModel")
 
-const author = async function (req, res){
+const createAuthor = async function(req, res){
     try{
-    const authorDetails = req.body
-    const validateEmail = (email) => {
-        return String(email)
-          .toLowerCase()
-          .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          );
-      };
-      if (!validateEmail){
-          return res.stutus(400).send({msg : "email invalid"})
-      }
-      const data = await authorModel.create(authorDetails)
-      console.log("data saved successfully")
-      res.status(200).send({msg : data})  
+        let data = req.body
+        if(!data.fname) {return res.status(404).send({msg: "First Name is Required"})}
+        if(!data.lname) {return res.status(404).send({msg: "Last Name is Required"})}
+        if(!data.title) {return res.status(404).send({msg: "Title is Required"})}
+        if(!data.email) {return res.status(404).send({msg: "Email is Required"})}
+        if(!data.password) {return res.status(404).send({msg: "Password is Required"})}
+        const validateEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email)
+        if(!validateEmail){
+        return res.status(400).send({msg:"Invalid Email "})
     }
-    catch(error){ res.status(500).send({error : error.message})}               
+    let savedata = await authorModel.create(data)
+    res.send({msg:savedata})
+    }
+    catch(err){
+        res.status(500).send({error : err.message})
+    }
+
 }
 
-module.exports.author = author
+module.exports.createAuthor = createAuthor

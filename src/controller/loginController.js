@@ -1,32 +1,35 @@
-const jwt = require('jsonwebtoken');
-const authorModel = require('../models/authorModel.js');
+const jwt = require("jsonwebtoken");
+const authorModel = require("../model/authorModel");
 
-const login= async function(req,res){
+
+const loginUser = async function (req, res) {
     try{
-        let authorData =req.body
-        const username= authorData.email
-        const password=authorData.password
-        let authorEmail= await authorModel.findOne({email:username});
-        if(!authorEmail)
-            return res.status(400).send({
-                status:false,
-                msg: "username is not correct ",
-            })
-            let authorPass =await authorModel.findOne({password:password});
-            if(!authorPass)
-                return res.status(400).send({
-                    status:false,
-                    msg: "password  is not correct ",
-                })
-                let token = jwt.sign(
-                    {
-                        authorId: authorEmail._Id.tostring()
-                    },
-                    "project for blogs"
-                );
-                res.setHeader("x-api-key",token);
-                res.send({status:true,data:token});
+    let userName = req.body.email;
+    let password = req.body.password;
+  
+    let user = await authorModel.findOne({ email: userName, password: password });
+    if (!userName)
+      return res.status.send({
+        status: false,
+        msg: "username or the password is not corerct",
+      });
+    
+      let token = jwt.sign(
+    {
+        auhor_Id: user._id.toString(),
+        batch: "functionup",
+        organisation: "thorium",
+    },
+      "first project"
+    );
+    res.setHeader("x-api-key", token);
+    res.status(200).send({ status: true, data: token });
     }
-    catch(errorFound) {res.status(500).send({status:false,msg:errorFound.Massage})}
+    catch(err){
+        res.status(500).send({Error:err.messages})
+    }
 }
-module.exports.login= login
+
+
+module.exports.loginUser = loginUser
+  
